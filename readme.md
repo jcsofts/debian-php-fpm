@@ -1,4 +1,4 @@
-debian 9.5 php7.0
+debian 9.5 php7.2
 
 docker-compose file example:
 

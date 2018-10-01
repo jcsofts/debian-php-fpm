@@ -8,8 +8,8 @@ if [ ! -z "$SSH_KEY" ]; then
  chmod 600 /root/.ssh/id_rsa
 fi
 
-PhpFpmFile='/etc/php/7.0/fpm/pool.d/www.conf'
-PhpIniFile='/etc/php/7.0/fpm/php.ini'
+PhpFpmFile='/etc/php/7.2/fpm/pool.d/www.conf'
+PhpIniFile='/etc/php/7.2/fpm/php.ini'
 
 #if [ ! -z "$DOMAIN" ]; then
 # sed -i "s#server_name _;#server_name ${DOMAIN};#g" /etc/nginx/sites-available/default.conf
@@ -58,7 +58,7 @@ if [ ! -z "$PHP_MAX_EXECUTION_TIME" ]; then
 fi
 
 # Enable xdebug
-XdebugFile='/etc/php/7.0/fpm/conf.d/20-xdebug.ini'
+XdebugFile='/etc/php/7.2/fpm/conf.d/20-xdebug.ini'
 if [ "$ENABLE_XDEBUG" == "1" ] ; then
   echo "Enabling xdebug"
     # See if file contains xdebug text.
@@ -91,6 +91,6 @@ else
   fi
 fi
 
-rm -rf /var/run/php/php7.0-fpm.pid
+rm -rf /var/run/php/php7.2-fpm.pid
 # Start supervisord and services
-exec /usr/sbin/php-fpm7.0 --nodaemonize
+exec /usr/sbin/php-fpm7.2 --nodaemonize
