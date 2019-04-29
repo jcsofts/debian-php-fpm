@@ -8,8 +8,8 @@ if [ ! -z "$SSH_KEY" ]; then
  chmod 600 /root/.ssh/id_rsa
 fi
 
-PhpFpmFile='/etc/php/7.2/fpm/pool.d/www.conf'
-PhpIniFile='/etc/php/7.2/fpm/php.ini'
+PhpFpmFile='/usr/local/etc/php-fpm.d/www.conf'
+PhpIniFile='/usr/local/etc/php/php.ini'
 
 #if [ ! -z "$DOMAIN" ]; then
 # sed -i "s#server_name _;#server_name ${DOMAIN};#g" /etc/nginx/sites-available/default.conf
@@ -29,7 +29,7 @@ else
  sed -i "s/;php_flag\[display_errors\] = off/php_flag[display_errors] = on/g" $PhpFpmFile
  sed -i "s/display_errors = Off/display_errors = On/g" $PhpIniFile
  if [ ! -z "$ERROR_REPORTING" ]; then sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = $ERROR_REPORTING/g" $PhpIniFile; fi
- sed -i "s#;error_log = syslog#error_log = /var/log/php/error.log#g" $PhpIniFile
+ sed -i "s#;error_log = syslog#error_log = /usr/local/var/log/php_error.log#g" $PhpIniFile
 fi
 
 # Display Version Details or not
@@ -58,14 +58,15 @@ if [ ! -z "$PHP_MAX_EXECUTION_TIME" ]; then
 fi
 
 # Enable xdebug
-XdebugFile='/etc/php/7.2/fpm/conf.d/20-xdebug.ini'
+XdebugFile='/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini'
 if [ "$ENABLE_XDEBUG" == "1" ] ; then
   echo "Enabling xdebug"
     # See if file contains xdebug text.
     if [ -f $XdebugFile ]; then
         echo "Xdebug already enabled... skipping"
     else
-      echo "zend_extension=xdebug.so" >> $XdebugFile
+      docker-php-ext-enable xdebug
+      # echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20180731/xdebug.so" >> $XdebugFile
       echo "xdebug.remote_enable=1 "  >> $XdebugFile
       echo "xdebug.remote_log=/tmp/xdebug.log"  >> $XdebugFile
       echo "xdebug.remote_autostart=false "  >> $XdebugFile # I use the xdebug chrome extension instead of using autostart
@@ -75,7 +76,10 @@ if [ "$ENABLE_XDEBUG" == "1" ] ; then
       #       you also need to set an env var `- PHP_IDE_CONFIG=serverName=docker`
     fi
 else
-  rm -rf $XdebugFile
+  if [ -f $XdebugFile ]; then
+      rm -rf $XdebugFile
+  fi
+  
 fi
 
 if [ ! -z "$PUID" ]; then
@@ -84,13 +88,13 @@ if [ ! -z "$PUID" ]; then
   fi
   #deluser nginx
   addgroup -g ${PGID} nginx
-  adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u ${PUID} nginx
+  #adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u ${PUID} nginx
 else
   if [ -z "$SKIP_CHOWN" ]; then
     chown -Rf www-data:www-data /var/www/html
   fi
 fi
 
-rm -rf /var/run/php/php7.2-fpm.pid
+# rm -rf /var/run/php/php7.2-fpm.pid
 # Start supervisord and services
-exec /usr/sbin/php-fpm7.2 --nodaemonize
+exec php-fpm

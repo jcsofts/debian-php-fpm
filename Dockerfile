@@ -1,25 +1,13 @@
-FROM debian:stretch-slim
+FROM php:fpm
 
-ENV fpm_conf /etc/php/7.2/fpm/pool.d/www.conf
-ENV php_ini /etc/php/7.2/fpm/php.ini
+ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
+ENV php_ini /usr/local/etc/php/php.ini
 
-RUN apt-get update && \
-    apt-get upgrade && \
-    apt -y install software-properties-common apt-transport-https lsb-release ca-certificates && \
-	apt-get -y install wget &&\
-    wget -O /etc/apt/trusted.gpg.d/php.gpg https://mirror.xtom.com.hk/sury/php/apt.gpg && \
-    sh -c 'echo "deb https://mirror.xtom.com.hk/sury/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
-    apt-get update && \
-    apt-get -y install php7.2-fpm php7.2 curl \
-	php7.2-xml php7.2-xsl php-xdebug php7.2-apcu php7.2-intl php7.2-imagick php7.2-gmp \
-	php7.2-zip php7.2-bz2 php7.2-mbstring php7.2-gd php7.2-ldap php7.2-mysql && \
-    apt-get -y remove software-properties-common lsb-release ca-certificates && \
-	apt-get autoremove -y && \
-    apt-get clean && \
-    apt-get autoclean && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /usr/share/man/?? && \
-    rm -rf /usr/share/man/??_* && \
+RUN apt-get -y update && \
+    pecl install xdebug && \
+    cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
+    docker-php-ext-install pdo_mysql && \
+    docker-php-ext-enable pdo_mysql && \
     sed -i \
         -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
         -e "s/pm.max_children = 5/pm.max_children = 10/g" \
@@ -28,14 +16,16 @@ RUN apt-get update && \
         -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 4/g" \
         -e "s/;pm.max_requests = 500/pm.max_requests = 200/g" \
         -e "s/;listen.mode = 0660/listen.mode = 0666/g" \
-        -e "s/listen = \/run\/php\/php7.2-fpm.sock/listen = [::]:9000/g" \
+        -e "s/listen = 127.0.0.1:9000/listen = [::]:9000/g" \
         -e "s/^;clear_env = no$/clear_env = no/" \
         ${fpm_conf} && \
-  	sed -i \
-    	-e "s/;session.save_path = \"\/var\/lib\/php\/sessions\"/session.save_path = \"\/var\/lib\/php\/sessions\"/g" \
-        -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" \
-    	${php_ini} && \
-    mkdir /var/run/php
+    sed -i \
+        -e "s/;session.save_path = \"\/tmp\"/session.save_path = \"\/tmp\"/g" \
+        ${php_ini} && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    apt-get autoclean -y && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY script/start.sh /usr/local/bin/start.sh
 
