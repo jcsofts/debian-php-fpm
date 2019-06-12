@@ -6,8 +6,8 @@ ENV php_ini /usr/local/etc/php/php.ini
 RUN apt-get -y update && \
     pecl install xdebug && \
     cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
-    docker-php-ext-install pdo_mysql && \
-    docker-php-ext-enable pdo_mysql && \
+    docker-php-ext-install pdo_mysql mysqli && \
+    docker-php-ext-enable pdo_mysql mysqli && \
     sed -i \
         -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
         -e "s/pm.max_children = 5/pm.max_children = 10/g" \
