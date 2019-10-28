@@ -4,10 +4,12 @@ ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_ini /usr/local/etc/php/php.ini
 
 RUN apt-get -y update && \
+    apt-get -y install libmcrypt-dev libpng-dev && \
     pecl install xdebug && \
+    printf "\n" | pecl install mcrypt && \
     cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
-    docker-php-ext-install pdo_mysql mysqli bcmath && \
-    docker-php-ext-enable pdo_mysql mysqli bcmath && \
+    docker-php-ext-install pdo_mysql mysqli bcmath gd && \
+    docker-php-ext-enable pdo_mysql mysqli bcmath mcrypt gd && \
     sed -i \
         -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
         -e "s/pm.max_children = 5/pm.max_children = 10/g" \
