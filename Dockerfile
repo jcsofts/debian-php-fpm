@@ -8,8 +8,8 @@ RUN apt-get -y update && \
     pecl install xdebug && \
     printf "\n" | pecl install mcrypt && \
     cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
-    docker-php-ext-install pdo_mysql mysqli bcmath gd && \
-    docker-php-ext-enable pdo_mysql mysqli bcmath mcrypt gd && \
+    docker-php-ext-install pdo_mysql mysqli bcmath gd zip && \
+    docker-php-ext-enable pdo_mysql mysqli bcmath mcrypt gd zip && \
     sed -i \
         -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
         -e "s/pm.max_children = 5/pm.max_children = 10/g" \
