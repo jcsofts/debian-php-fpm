@@ -2,6 +2,7 @@ FROM php:fpm
 
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_ini /usr/local/etc/php/php.ini
+ENV php_fpm_conf /usr/local/etc/php-fpm.conf
 
 RUN apt-get -y update && \
     apt-get -y install libmcrypt-dev libpng-dev libzip-dev && \
@@ -24,6 +25,9 @@ RUN apt-get -y update && \
     sed -i \
         -e "s/;session.save_path = \"\/tmp\"/session.save_path = \"\/tmp\"/g" \
         ${php_ini} && \
+    sed -i \
+        -e "s/;pid = run\/php-fpm.pid/pid = run\/php-fpm.pid/g" \
+        ${php_fpm_conf} && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     apt-get autoclean -y && \
