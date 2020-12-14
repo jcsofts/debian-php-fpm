@@ -24,7 +24,7 @@ RUN apt-get -y update && \
         ${fpm_conf} && \
     sed -i \
         -e "s/;session.save_path = \"\/tmp\"/session.save_path = \"\/tmp\"/g" \
-        -e "s/;curl.cainfo =/curl.cainfo = /usr/local/etc/php/cacert.pem/g" \
+        -e "s/;curl.cainfo =/curl.cainfo = \"\/usr\/local\/etc\/php\/cacert.pem\"/g" \
         ${php_ini} && \
     sed -i \
         -e "s/;pid = run\/php-fpm.pid/pid = run\/php-fpm.pid/g" \
