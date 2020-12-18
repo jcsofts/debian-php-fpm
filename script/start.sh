@@ -67,13 +67,12 @@ if [ "$ENABLE_XDEBUG" == "1" ] ; then
     else
       docker-php-ext-enable xdebug
       # echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20180731/xdebug.so" >> $XdebugFile
-      echo "xdebug.remote_enable=1"  >> $XdebugFile
-      echo "xdebug.remote_log=/tmp/xdebug.log"  >> $XdebugFile
-      echo "xdebug.remote_autostart=1"  >> $XdebugFile # I use the xdebug chrome extension instead of using autostart
-      # echo "xdebug.remote_host=localhost "  >> $XdebugFile
-      # echo "xdebug.remote_port=9000 "  >> $XdebugFile
-      # NOTE: xdebug.remote_host is not needed here if you set an environment variable in docker-compose like so `- XDEBUG_CONFIG=remote_host=192.168.111.27`.
-      #       you also need to set an env var `- PHP_IDE_CONFIG=serverName=docker`
+      echo "xdebug.mode=debug"  >> $XdebugFile
+      echo "xdebug.start_with_request=yes"  >> $XdebugFile
+      echo "xdebug.log=/tmp/xdebug.log"  >> $XdebugFile
+      echo "xdebug.discover_client_host=true"  >> $XdebugFile # I use the xdebug chrome extension instead of using autostart
+      # echo "xdebug.client_host=localhost "  >> $XdebugFile
+      # echo "xdebug.client_port=9003 "  >> $XdebugFile
     fi
 else
   if [ -f $XdebugFile ]; then
