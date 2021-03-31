@@ -1,4 +1,4 @@
-FROM php:7.3-fpm
+FROM php:7-fpm
 
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_ini /usr/local/etc/php/php.ini
