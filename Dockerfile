@@ -5,7 +5,7 @@ ENV php_ini /usr/local/etc/php/php.ini
 ENV php_fpm_conf /usr/local/etc/php-fpm.conf
 
 RUN apt-get -y update && \
-    apt-get -y install libmcrypt-dev libpng-dev libzip-dev && \
+    apt-get -y install libmcrypt-dev libpng-dev libzip-dev ffmpeg && \
     pecl install xdebug && \
     printf "\n" | pecl install mcrypt && \
     cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
